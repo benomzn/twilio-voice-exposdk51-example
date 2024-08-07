@@ -43,6 +43,7 @@ const useTwilioVoice = ({ loaded }: { loaded: boolean }) => {
       updateState({ twilioTokenRegistered: true });
     } catch (error) {
       console.error("Error registering voice:", error);
+      // Alert.alert(error);
       updateState({ twilioTokenRegistered: false });
     }
   };

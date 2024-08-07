@@ -14,14 +14,18 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.testing.voip.benomzn"
+      "bundleIdentifier": "com.test.benomzn.twilio",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Esta aplicación usa el micrófono para grabar audio.",
+        "UIBackgroundModes": ["audio", "fetch", "remote-notification", "voip"]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.testing.voip.benomzn"
+      "package": "com.test.benomzn.twilio"
     },
     "web": {
       "bundler": "metro",
@@ -33,6 +37,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "put project id"
+      }
+    },
+    "owner": "put owner from expo dev"
   }
 }
