@@ -1,28 +1,26 @@
-import useActivaCallStore from "@/hooks/useCallStore";
+import useActivaCallStore from "@/hooks/useActiveCallStore";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { timeFormater } from "@/utils/timeFormater";
+import TimerCall from "@/components/TimerCall";
+import { voice } from "@/utils/voice";
+import { AudioDevice } from "@twilio/voice-react-native-sdk";
 
 const ActiveCallScreen = (): JSX.Element | null => {
-  const { call, callInfo, clearState, setActiveCall } = useActivaCallStore();
-  // or is the speaker is from call, just put in the store
-  const [speakerOn, setSpeakerOn] = useState<boolean>(false);
-  const [secondsElapsed, setSecondsElapsed] = useState<number>(0);
+  const {
+    call,
+    callInfo,
+    currentDeviceAudio,
+    setCallInfo,
+    setCurrentDeviceAudio,
+    clearState,
+  } = useActivaCallStore();
   const router = useRouter();
 
   useEffect(() => {
     if (!call || !callInfo) {
       router.navigate("/");
     }
-
-    let timer = setInterval(() => {
-      setSecondsElapsed((prev) => prev + 1);
-    }, 1000);
-
-    return () => {
-      clearInterval(timer);
-    };
   }, [call, callInfo]);
 
   if (!call || !callInfo) return null;
@@ -30,7 +28,7 @@ const ActiveCallScreen = (): JSX.Element | null => {
   const handleMute = async () => {
     let newMutedValue = !callInfo.isMuted;
     await call.mute(newMutedValue);
-    setActiveCall({ isMuted: newMutedValue });
+    setCallInfo({ isMuted: newMutedValue });
   };
 
   const handleDisconnect = async () => {
@@ -38,11 +36,27 @@ const ActiveCallScreen = (): JSX.Element | null => {
     clearState(); // trigger useeffect to navigate init screen
   };
 
-  const handleSpeaker = async () => {
-    /**
-     * Check how on the speaker
-     */
-    setSpeakerOn(!speakerOn);
+  const handleAudio = async () => {
+    const { audioDevices } = await voice.getAudioDevices();
+
+    switch (currentDeviceAudio) {
+      case AudioDevice.Type.Earpiece: {
+        var speakerAudio = audioDevices.find(
+          (aDevice) => aDevice.type === AudioDevice.Type.Speaker
+        );
+        await speakerAudio?.select();
+        setCurrentDeviceAudio(AudioDevice.Type.Speaker);
+        break;
+      }
+      case AudioDevice.Type.Speaker: {
+        var earpieceAudio = audioDevices.find(
+          (aDevice) => aDevice.type === AudioDevice.Type.Earpiece
+        );
+        await earpieceAudio?.select();
+        setCurrentDeviceAudio(AudioDevice.Type.Earpiece);
+        break;
+      }
+    }
   };
 
   return (
@@ -50,16 +64,23 @@ const ActiveCallScreen = (): JSX.Element | null => {
       <View style={styles.container}>
         <Text style={styles.title}>In call..</Text>
         <Text>From: {callInfo.from}</Text>
-        <Text>Time in call: {timeFormater(secondsElapsed)}</Text>
+        <TimerCall callActive={call !== null || callInfo !== null} />
         <View style={styles.buttonsContainer}>
           <View style={{ display: "flex" }}>
-            <Text>Is muted: {callInfo.isMuted ? "YES" : "NO"}</Text>
-            <Button title="Mute" onPress={handleMute} />
+            <Text>Mic is muted: {callInfo.isMuted ? "YES" : "NO"}</Text>
+            <Button title="Mute mic" onPress={handleMute} />
           </View>
           <Button title="Disconnect" onPress={handleDisconnect} />
           <View style={{ display: "flex" }}>
-            <Text>Is speaker on: {speakerOn ? "YES" : "NO"}</Text>
-            <Button title="Speaker" onPress={handleSpeaker} />
+            <Text>Is {currentDeviceAudio} on</Text>
+            <Button
+              title={`Switch to ${
+                currentDeviceAudio === AudioDevice.Type.Earpiece
+                  ? "speaker"
+                  : "earpiece"
+              }`}
+              onPress={handleAudio}
+            />
           </View>
         </View>
       </View>
