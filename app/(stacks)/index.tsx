@@ -5,7 +5,6 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useTwilioEnvStore } from "@/hooks/useTwilioEnvStore";
-import { Audio } from "expo-av";
 
 export default function HomeScreen() {
   const { twilioState } = useTwilioEnvStore();
@@ -38,16 +37,6 @@ export default function HomeScreen() {
         <ThemedText numberOfLines={4}>
           <ThemedText type="defaultSemiBold">Twilio Token: </ThemedText>
           {twilioState.twilioToken}
-        </ThemedText>
-        <ThemedText>
-          <ThemedText type="defaultSemiBold">
-            Voice Permission Granted:{" "}
-          </ThemedText>
-          {twilioState.voicePermission === null
-            ? ""
-            : twilioState.voicePermission === Audio.PermissionStatus.GRANTED
-            ? "✅"
-            : "❌"}
         </ThemedText>
         <ThemedText>
           <ThemedText type="defaultSemiBold">

@@ -1,11 +1,8 @@
 import { create } from "zustand";
-import { Audio } from "expo-av";
 
 interface TwilioManagerProps {
   twilioToken: string;
   twilioTokenRegistered: boolean | null;
-  voicePermission: Audio.PermissionStatus | null;
-  inCall: boolean;
 }
 
 /**
@@ -14,10 +11,8 @@ interface TwilioManagerProps {
  * and store it the result in the app to register it in twilio
  */
 const initialState: TwilioManagerProps = {
-  twilioToken: "xaxaxaxaxaxaxaxaxaxaxaxaxaxaxaxaxa",
+  twilioToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6InR3aWxpby1mcGE7dj0xIiwidHdyIjoiaWUxIn0.eyJpc3MiOiJTSzRhMTMyOTViYTYwMDI4YmE3MWE4NDA5ZGVkOWViNzAxIiwiZXhwIjoxNzIzMTQ0MzYyLCJqdGkiOiJTSzRhMTMyOTViYTYwMDI4YmE3MWE4NDA5ZGVkOWViNzAxLTE3MjMxNDA3NjIiLCJzdWIiOiJBQzdiNDAwNjFlNzQ4YjAxY2M1ODI5ZGJjM2VjYzc5ZmI3IiwiZ3JhbnRzIjp7ImlkZW50aXR5IjoiYmVub216biIsInZvaWNlIjp7ImluY29taW5nIjp7ImFsbG93Ijp0cnVlfSwib3V0Z29pbmciOnsiYXBwbGljYXRpb25fc2lkIjoiQVBjNzUwOTY5NDU2NmQ0NjI1MWQ0YTE4ZjFlNDM1ODBhZSJ9LCJwdXNoX2NyZWRlbnRpYWxfc2lkIjoiQ1JhODQ3NmQzYTQyNThlZjQ3MDRjYzEzMzVjYTNlZDA4YyJ9fX0.me0yE5m79-nfFaKR6VkZRSQaNXNVIvCbKY9KlOn4HDo",
   twilioTokenRegistered: null,
-  voicePermission: null,
-  inCall: false,
 };
 
 interface TwilioEnvStoreProps {
