@@ -22,7 +22,6 @@ interface ActiveCallProps {
 export const useActivaCallStore = create<ActiveCallProps>((set) => ({
   call: null,
   callInfo: null,
-  currentDeviceAudio: null,
   bootstrapState: (
     newCall: Call,
     newCallInfo: Partial<CallInfo>,

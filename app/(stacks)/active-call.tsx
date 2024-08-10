@@ -1,21 +1,37 @@
 import useActivaCallStore from "@/hooks/useActiveCallStore";
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import TimerCall from "@/components/TimerCall";
-import { AudioDevice } from "@twilio/voice-react-native-sdk";
+import { AudioDevice, Call } from "@twilio/voice-react-native-sdk";
 import useAudioDeviceInCall from "@/hooks/useAudioDeviceInCall";
+import { TwilioError } from "@twilio/voice-react-native-sdk/lib/typescript/error";
 
 const ActiveCallScreen = (): JSX.Element | null => {
   const { call, callInfo, setCallInfo, clearState } = useActivaCallStore();
   const { audioDeviceTypeSelected, toggleAudioDevice } = useAudioDeviceInCall();
   const router = useRouter();
 
+  const handleDisconnect = useCallback(async (error: TwilioError | undefined) => {
+    if(error)
+      console.log("an unnatural disconnect occurred in call: ", error);
+
+    clearState();
+  }, [clearState]);
+
   useEffect(() => {
+    // Ensure that you are really in a call checking the store values
     if (!call || !callInfo) {
       router.navigate("/");
+      return;
     }
-  }, [call, callInfo]);
+
+    call!.on(Call.Event.Disconnected, handleDisconnect);
+
+    return () => {
+      call!.off(Call.Event.Disconnected, handleDisconnect);
+    }
+  }, [call, callInfo, handleDisconnect]);
 
   if (!call || !callInfo) return null;
 
@@ -27,7 +43,6 @@ const ActiveCallScreen = (): JSX.Element | null => {
 
   const endCall = async () => {
     await call.disconnect();
-    clearState(); // trigger useeffect to navigate init screen
   };
 
   return (
