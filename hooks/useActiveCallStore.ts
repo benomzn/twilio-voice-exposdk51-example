@@ -1,4 +1,4 @@
-import { AudioDevice, Call } from "@twilio/voice-react-native-sdk";
+import { Call } from "@twilio/voice-react-native-sdk";
 import { create } from "zustand";
 
 export interface CallInfo {
@@ -11,14 +11,11 @@ export interface CallInfo {
 interface ActiveCallProps {
   call: Call | null;
   callInfo: CallInfo | null;
-  currentDeviceAudio: AudioDevice.Type | null;
   bootstrapState: (
     newCall: Call,
     newCallInfo: Partial<CallInfo>,
-    newCurrentDeviceAudio: AudioDevice.Type
   ) => void;
   setCallInfo: (callInfo: CallInfo) => void;
-  setCurrentDeviceAudio: (deviceAudio: AudioDevice.Type) => void;
   clearState: () => void;
 }
 
@@ -29,7 +26,6 @@ export const useActivaCallStore = create<ActiveCallProps>((set) => ({
   bootstrapState: (
     newCall: Call,
     newCallInfo: Partial<CallInfo>,
-    newCurrentDeviceAudio: AudioDevice.Type
   ) =>
     set((state) => ({
       call: newCall,
@@ -37,7 +33,6 @@ export const useActivaCallStore = create<ActiveCallProps>((set) => ({
         ...state.callInfo,
         ...newCallInfo,
       },
-      currentDeviceAudio: newCurrentDeviceAudio,
     })),
   setCallInfo: (callInfo: CallInfo) =>
     set((state) => ({
@@ -46,11 +41,7 @@ export const useActivaCallStore = create<ActiveCallProps>((set) => ({
         ...callInfo,
       },
     })),
-  setCurrentDeviceAudio: (deviceAudio: AudioDevice.Type) =>
-    set((state) => ({
-      currentDeviceAudio: deviceAudio,
-    })),
-  clearState: () => set({ call: null, callInfo: null, currentDeviceAudio: null }),
+  clearState: () => set({ call: null, callInfo: null }),
 }));
 
 export default useActivaCallStore;

@@ -17,12 +17,6 @@ const useTwilioVoice = ({ loaded }: { loaded: boolean }) => {
   const { bootstrapState } = useActivaCallStore();
   const router = useRouter();
 
-  const setEarpieceDeviceAsDefault = async () => {
-    const { audioDevices } = (await voice.getAudioDevices());
-    const earpieceDevice = audioDevices.find(aDevice => aDevice.type === AudioDevice.Type.Earpiece);
-    await earpieceDevice?.select();
-  }
-
   const registeredHandler = () => {
     console.log("el token se ha registrado correctamente");
     updateState({ twilioTokenRegistered: true });
@@ -30,27 +24,28 @@ const useTwilioVoice = ({ loaded }: { loaded: boolean }) => {
 
   const callInviteAcceptedHandler = async (call: Call) => {
     console.log("accepted call");
-    
+
     const newIncomingCall: CallInfo = {
       from: call.getFrom(),
       to: call.getTo(),
       isMuted: call.isMuted(),
       sid: call.getSid(),
-   }
+    };
 
-   // Set the earpieceDevice as default
-   await setEarpieceDeviceAsDefault();
-
-   bootstrapState(call, newIncomingCall, AudioDevice.Type.Earpiece);
-   router.push("/active-call");
-  }
+    bootstrapState(call, newIncomingCall);
+    router.push("/active-call");
+  };
 
   const callInviteHandler = (callInvite: CallInvite) => {
     console.log("incoming calling");
     callInvite.updateCallerHandle("Jonathan Dev");
     callInvite.on(CallInvite.Event.Accepted, callInviteAcceptedHandler);
-    callInvite.on(CallInvite.Event.Cancelled, (error?: TwilioError) => {Alert.alert("canceled")})
-    callInvite.on(CallInvite.Event.Rejected, () => {console.log("rejected")})
+    callInvite.on(CallInvite.Event.Cancelled, (error?: TwilioError) => {
+      console.log("canceled");
+    });
+    callInvite.on(CallInvite.Event.Rejected, () => {
+      console.log("rejected");
+    });
   };
 
   useEffect(() => {
@@ -70,7 +65,6 @@ const useTwilioVoice = ({ loaded }: { loaded: boolean }) => {
       registerToken();
     }
   }, [loaded]);
-
 
   const registerToken = async () => {
     try {

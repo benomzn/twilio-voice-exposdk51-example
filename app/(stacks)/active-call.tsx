@@ -1,20 +1,14 @@
 import useActivaCallStore from "@/hooks/useActiveCallStore";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import TimerCall from "@/components/TimerCall";
-import { voice } from "@/utils/voice";
 import { AudioDevice } from "@twilio/voice-react-native-sdk";
+import useAudioDeviceInCall from "@/hooks/useAudioDeviceInCall";
 
 const ActiveCallScreen = (): JSX.Element | null => {
-  const {
-    call,
-    callInfo,
-    currentDeviceAudio,
-    setCallInfo,
-    setCurrentDeviceAudio,
-    clearState,
-  } = useActivaCallStore();
+  const { call, callInfo, setCallInfo, clearState } = useActivaCallStore();
+  const { audioDeviceTypeSelected, toggleAudioDevice } = useAudioDeviceInCall();
   const router = useRouter();
 
   useEffect(() => {
@@ -25,38 +19,15 @@ const ActiveCallScreen = (): JSX.Element | null => {
 
   if (!call || !callInfo) return null;
 
-  const handleMute = async () => {
+  const toggleMute = async () => {
     let newMutedValue = !callInfo.isMuted;
     await call.mute(newMutedValue);
     setCallInfo({ isMuted: newMutedValue });
   };
 
-  const handleDisconnect = async () => {
+  const endCall = async () => {
     await call.disconnect();
     clearState(); // trigger useeffect to navigate init screen
-  };
-
-  const handleAudio = async () => {
-    const { audioDevices } = await voice.getAudioDevices();
-
-    switch (currentDeviceAudio) {
-      case AudioDevice.Type.Earpiece: {
-        var speakerAudio = audioDevices.find(
-          (aDevice) => aDevice.type === AudioDevice.Type.Speaker
-        );
-        await speakerAudio?.select();
-        setCurrentDeviceAudio(AudioDevice.Type.Speaker);
-        break;
-      }
-      case AudioDevice.Type.Speaker: {
-        var earpieceAudio = audioDevices.find(
-          (aDevice) => aDevice.type === AudioDevice.Type.Earpiece
-        );
-        await earpieceAudio?.select();
-        setCurrentDeviceAudio(AudioDevice.Type.Earpiece);
-        break;
-      }
-    }
   };
 
   return (
@@ -68,18 +39,18 @@ const ActiveCallScreen = (): JSX.Element | null => {
         <View style={styles.buttonsContainer}>
           <View style={{ display: "flex" }}>
             <Text>Mic is muted: {callInfo.isMuted ? "YES" : "NO"}</Text>
-            <Button title="Mute mic" onPress={handleMute} />
+            <Button title="Mute mic" onPress={toggleMute} />
           </View>
-          <Button title="Disconnect" onPress={handleDisconnect} />
+          <Button title="Disconnect" onPress={endCall} />
           <View style={{ display: "flex" }}>
-            <Text>Is {currentDeviceAudio} on</Text>
+            <Text>Is {audioDeviceTypeSelected} on</Text>
             <Button
               title={`Switch to ${
-                currentDeviceAudio === AudioDevice.Type.Earpiece
+                audioDeviceTypeSelected === AudioDevice.Type.Earpiece
                   ? "speaker"
                   : "earpiece"
               }`}
-              onPress={handleAudio}
+              onPress={toggleAudioDevice}
             />
           </View>
         </View>
