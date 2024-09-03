@@ -1,0 +1,9 @@
+{
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["ExpoCallstatusModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.callstatus.ExpoCallstatusModule"]
+  }
+}

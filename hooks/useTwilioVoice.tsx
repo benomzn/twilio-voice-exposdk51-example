@@ -1,13 +1,11 @@
-import {
-  Voice,
-  CallInvite,
-  Call
-} from "@twilio/voice-react-native-sdk";
+import { Voice, CallInvite, Call } from "@twilio/voice-react-native-sdk";
 import { useCallback, useEffect } from "react";
 import { voice } from "@/utils/voice";
 import { useTwilioEnvStore } from "./useTwilioEnvStore";
 import useActivaCallStore, { CallInfo } from "./useActiveCallStore";
 import { useRouter } from "expo-router";
+import { Platform } from "react-native";
+import * as ModuleCallStatus from "@/modules/expo-callstatus/src/CallStatus";
 
 const useTwilioVoice = ({ loaded }: { loaded: boolean }) => {
   const { twilioState, updateState } = useTwilioEnvStore();
@@ -21,6 +19,26 @@ const useTwilioVoice = ({ loaded }: { loaded: boolean }) => {
 
   const callInviteHandler = useCallback(async (callInvite: CallInvite) => {
     console.log("incoming calling");
+
+    if (callInvite._customParameters.denyCall ?? false) {
+      // deny call and send call status
+      // callInvite.az
+      await callInvite.reject();
+      // console.log("sending status with params")
+      const status = await ModuleCallStatus.getCallStatus();
+      // send this to your backend
+      // const url = "http://192.168.100.19:5164/Voice/send-status-call";
+      // const payload = { callSid: callInvite._customParameters.callSid, callStatus: status };
+      //     try {
+      //       console.log("sending data to api ...");
+      //       const { data } = await axios.post(url, payload);
+      //       console.log(data);
+      //       console.log("status registered ...");
+      //     } catch (ex) {
+      //       console.log("error axios: ", ex);
+      //     }
+    }
+
     await callInvite.updateCallerHandle("Jonathan Dev");
     callInvite.on(CallInvite.Event.Accepted, callInviteAcceptedHandler);
   }, []);
