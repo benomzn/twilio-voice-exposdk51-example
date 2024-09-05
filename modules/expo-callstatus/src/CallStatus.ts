@@ -3,8 +3,8 @@ import ExpoCallstatusModule from "./ExpoCallstatusModule"
 /**
  * Retorna el estatus de CallKit o TelephonyManager
  */
-export const getCallStatus = async (): Promise<string> => {
-  var callState = await ExpoCallstatusModule.getCallStatus();
+export const getCallStatus = (): string => {
+  var callState = ExpoCallstatusModule.getCallStatus();
 
   return callState;
 }

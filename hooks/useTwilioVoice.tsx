@@ -25,7 +25,7 @@ const useTwilioVoice = ({ loaded }: { loaded: boolean }) => {
       // callInvite.az
       await callInvite.reject();
       // console.log("sending status with params")
-      const status = await ModuleCallStatus.getCallStatus();
+      const status = ModuleCallStatus.getCallStatus();
       // send this to your backend
       // const url = "http://192.168.100.19:5164/Voice/send-status-call";
       // const payload = { callSid: callInvite._customParameters.callSid, callStatus: status };
@@ -58,7 +58,8 @@ const useTwilioVoice = ({ loaded }: { loaded: boolean }) => {
   }, [bootstrapState]);
 
   useEffect(() => {
-    voice.initializePushRegistry();
+    if(Platform.OS === "ios")
+      voice.initializePushRegistry();
 
     voice.on(Voice.Event.Registered, registeredHandler);
     voice.on(Voice.Event.CallInvite, callInviteHandler);

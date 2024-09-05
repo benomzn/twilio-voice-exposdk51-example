@@ -7,12 +7,12 @@ public class ExpoCallstatusModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoCallstatus")
 
-    AsyncFunction("getCallStatus") {
-      await self.getCallStatus()
+    Function("getCallStatus") {
+      self.getCallStatus()
     }
   }
 
-  private func getCallStatus() async -> String {
+  private func getCallStatus() -> String {
     let calls = callObserver.calls
     
     if calls.isEmpty {

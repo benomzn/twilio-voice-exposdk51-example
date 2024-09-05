@@ -21,3 +21,4 @@ expo-env.d.ts
 
 /ios
 /android
+/modules/expo-callstatus/android/build
