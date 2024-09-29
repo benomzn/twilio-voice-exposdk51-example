@@ -19,7 +19,8 @@
         "NSMicrophoneUsageDescription": "Esta aplicación requiere el micrófono para poder recibir llamadas por VoIP.",
         "UIBackgroundModes": ["audio", "fetch", "remote-notification", "voip", "location"],
         "NSCallKitUsageDescription": "Esta aplicación requiere acceso a CallKit para obtener el estatus de sus llamadas."
-      }
+      },
+      "associatedDomains": ["messagefilter:3e9a-2806-2f0-33a0-f5ac-543b-9add-307a-95e0.ngrok-free.app"]
     },
     "android": {
       "adaptiveIcon": {
